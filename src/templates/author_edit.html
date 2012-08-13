@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block body %}
+<form class="form-horizontal" method="POST">
+    <fieldset>
+      <div class="control-group">
+        <label class="control-label" for="author-name">Author name</label>
+        <div class="controls">
+          <input type="text" class="input-xlarge" id="author-name" name="author-name" value="{{ author.name }}">
+          <p class="help-block">Enter the author name here</p>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        <button type="reset" class="btn">Cancel</button>
+      </div>
+    </fieldset>
+</form>
+{% endblock %}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block head %}
+    <title>{{ model }} - My Webpage</title>
+    {% endblock %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js" type="text/javascript"></script>
+    <link href="http://harvesthq.github.com/chosen/chosen/chosen.css" rel="stylesheet" type="text/css" />
+    <script src="http://harvesthq.github.com/chosen/chosen/chosen.jquery.js" type="text/javascript"></script>
+    <!-- Twitter bootstrap -->
+    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap-responsive.css" rel="stylesheet" type="text/css" />
+    <script src="http://twitter.github.com/bootstrap/assets/js/bootstrap.js"></script>
+</head>
+<body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li class="{% if model == 'authors' %}active{% endif %}">
+                <a href="/authors/list">Authors</a>
+              </li>
+              <li class="{% if model == 'books' %}active{% endif %}">
+                <a href="/books/list">Books</a>
+              </li>
+            </ul>
+          </div>
+          <form class="navbar-search pull-right" action="/search" method="POST">
+            <input type="text" class="search-query span2" placeholder="Search" name='q'>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="span12">
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    {% for message in messages %}
+                      <div class="alert alert-info">
+                        {{ message }}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+                {% block body %}{% endblock %}                
+            </div>
+        </div>
+        <footer>
+            <p>© zimyand 2012</p>
+        </footer>
+    </div>
+</body>

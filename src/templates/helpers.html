@@ -1,0 +1,54 @@
+{% macro render_list_item(title, id, model) -%}
+  <li class="span3">
+    <div class="thumbnail">
+      <img src="http://lorempixel.com/260/180/?{{ id }}" alt="">
+      <div class="caption">
+        <h5>{{ title }}</h5>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <p><a href="/{{ model }}/edit/{{ id }}" class="btn btn-primary"><i class="icon-pencil"></i> Edit</a> <a href="/{{ model }}/delete/{{ id }}" class="btn"><i class="icon-remove"></i> Delete</a></p>
+      </div>
+    </div>
+  </li>
+{%- endmacro %}
+
+{% macro render_book_list_item(book) -%}
+  <li class="span3">
+    <div class="thumbnail">
+      <img src="http://lorempixel.com/260/180/?{{ book.id }}" alt="">
+      <div class="caption">
+        <h5>{{ book.title }}</h5>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        {% if book.authors %}
+          <h5>Authors:</h5>
+          <ul>
+            {% for author in book.authors %}
+              <li><a href="/authors/edit/{{ author.id }}">{{ author.name }}</a></li>
+            {% endfor %}
+          </ul>
+          <hr/>
+        {% endif %}
+        <p><a href="/books/edit/{{ book.id }}" class="btn btn-primary"><i class="icon-pencil"></i> Edit</a> <a href="/books/delete/{{ book.id }}" class="btn"><i class="icon-remove"></i> Delete</a></p>
+      </div>
+    </div>
+  </li>
+{%- endmacro %}
+
+{% macro draw_actions_panel(model) -%}
+  <div class="form-actions">
+    <a class="btn btn-large" href="/{{ model }}/create"><i class="icon-plus"></i> Add new</a>
+  </div>
+{%- endmacro %}
+
+{% macro render_author_in_select(id, name, selected) -%}
+  <option value="{{ id }}"{% if id in selected %} selected="1"{% endif %}>{{ name }}</option>
+{%- endmacro %}
+
+{% macro render_pagination(pagination, model) -%}
+  <div class="pagination pagination-centered">
+    <ul>
+      {% for page in pagination.iter_pages() %}
+        <li{% if page == pagination.page %} class="active" {% endif %}><a href="/{{ model }}/list/page/{{ page }}">{{ page }}</a></li>
+      {% endfor %} 
+    </ul>
+  </div>
+{%- endmacro %}

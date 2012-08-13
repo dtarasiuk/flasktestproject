@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% from 'helpers.html' import render_author_in_select %}
+{% block body %}
+<form class="form-horizontal" method="POST">
+    <fieldset>
+      <div class="control-group">
+        <label class="control-label" for="book-title">Book title</label>
+        <div class="controls">
+          <input type="text" class="input-xlarge" id="book-title" name="book-title" value="{{ book.title }}">
+          <p class="help-block">Enter the book title here</p>
+        </div>
+      </div>
+      <div class="control-group">
+        <label class="control-label" for="book-authors">Book authors</label>
+        <div class="controls">
+          <select data-placeholder="Choose Authors..." class="chzn-select" multiple style="width:350px;" tabindex="4" name="book-authors" id="book-authors" >
+            {% for author in authors %}
+              {{ render_author_in_select(author.id, author.name, selected_authors) }}
+            {% endfor %}  
+          </select>
+          <p class="help-block">Select authors here</p>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        <button type="reset" class="btn">Cancel</button>
+      </div>
+    </fieldset>
+</form>
+<!--@todo: Move to js -->
+<script type="text/javascript"> $(".chzn-select").chosen(); $(".chzn-select-deselect").chosen({allow_single_deselect:true}); </script>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% from 'helpers.html' import render_book_list_item, draw_actions_panel, render_pagination %}
+{% block body %}
+  <ul class="thumbnails">
+    {% for book in pagination.get_items() %}
+      {{ render_book_list_item(book) }}
+    {% endfor %}  
+  </ul>
+  {{ render_pagination(pagination, model) }}
+{{ draw_actions_panel(model) }}
+{% endblock %}
