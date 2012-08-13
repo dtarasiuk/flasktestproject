@@ -1,46 +1,19 @@
 # -*- coding: utf-8 -*-
-from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
 from flask import render_template, request, redirect, url_for, flash
 from utils import Pagination
-
-
-app = Flask(__name__)
-app.config.from_pyfile('config.cfg')
-db = SQLAlchemy(app)
-
-
-books_to_authors = db.Table('books_to_authors',
-    db.Column('book_id', db.Integer, db.ForeignKey('book.id')),
-    db.Column('author_id', db.Integer, db.ForeignKey('author.id'))
-)
-
-
-class Book(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(128))
-    authors = db.relationship('Author', secondary=books_to_authors,
-        backref=db.backref('books', lazy='dynamic'))
-
-    def __repr__(self):
-        return '<Book %r>' % self.title
-
-
-class Author(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True)
-
-    def __repr__(self):
-        return '<Author %r>' % self.name
+from flasktestproject import app
+from flasktestproject.models import *
 
 
 @app.route('/')
 @app.route('/authors/list')
 @app.route('/authors/list/page/<int:page>')
 def authors_list(page=1):
-    pagination = Pagination(Author, page, app.config['OBJECTS_ON_PAGE'])
+    pagination = Pagination(Author.query, page, app.config['OBJECTS_ON_PAGE'])
 
-    return render_template('authors_list.html', model='authors', pagination=pagination)
+    return render_template(
+        'authors_list.html', model='authors', pagination=pagination
+    )
 
 
 @app.route('/authors/create', methods=['GET', 'POST'])
@@ -80,9 +53,14 @@ def author_delete(id=None):
 @app.route('/books/list')
 @app.route('/books/list/page/<int:page>')
 def books_list(page=1):
-    pagination = Pagination(Book, page, app.config['OBJECTS_ON_PAGE'])
+    pagination = Pagination(Book.query, page, app.config['OBJECTS_ON_PAGE'])
 
-    return render_template('books_list.html', model='books', pagination=pagination)
+    return render_template(
+        'books_list.html',
+        model='books',
+        pagination=pagination,
+        url='/books/list'
+    )
 
 
 @app.route('/books/create', methods=['GET', 'POST'])
@@ -90,10 +68,10 @@ def books_list(page=1):
 def book_edit(id=None):
     if id:
         book = Book.query.get(id)
-        selected_authors = [author.id for author in book.authors]
+        selected_authors_ids = [author.id for author in book.authors]
     else:
         book = None
-        selected_authors = []
+        selected_authors_ids = []
 
     if request.method == 'POST':
         new_title = request.form['book-title']
@@ -105,10 +83,7 @@ def book_edit(id=None):
             db.session.add(book)
             result_message = u'Book was successfully added'
 
-        new_authors = []
-        for author_id in request.form.getlist('book-authors'):
-            new_authors.append(Author.query.get(author_id))
-        book.authors = new_authors
+        book.set_authors(request.form.getlist('book-authors'))
 
         db.session.commit()
 
@@ -117,7 +92,7 @@ def book_edit(id=None):
     else:
         authors = Author.query.all()
         return render_template('book_edit.html', authors=authors, book=book, \
-            model='books', selected_authors=selected_authors)
+            model='books', selected_authors_ids=selected_authors_ids)
 
 
 @app.route('/books/delete/<int:id>', methods=['GET', 'POST'])
@@ -130,13 +105,16 @@ def book_delete(id=None):
 
 
 @app.route('/search', methods=['GET', 'POST'])
-def search():
-    q = request.form['q']
-    books = Book.query.filter(Book.title.ilike('%' + q + '%')).all()
-    authors = Author.query.filter(Author.name.ilike('%' + q + '%')).all()
-    books.append([author.books for author in authors])
+@app.route('/search/page/<int:page>', methods=['GET', 'POST'])
+def search(page=1):
+    if request.method == 'GET':
+        q = request.args['q']
+    else:
+        q = request.form['q']
 
-    return render_template('books_search.html', books=books, model='books')
+    pagination = Pagination(Book.query_search_by_title_and_author(q), \
+        page, app.config['OBJECTS_ON_PAGE'], q)
 
-if __name__ == '__main__':
-    app.run()
+    return render_template(
+        'books_list.html', pagination=pagination, model='books', url='/search'
+    )

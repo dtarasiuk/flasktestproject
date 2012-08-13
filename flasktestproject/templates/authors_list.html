@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% from 'helpers.html' import render_author_list_item, draw_actions_panel, render_pagination %}
+{% block body %}
+  <ul class="thumbnails">
+    {% for author in pagination.get_items() %}
+      {{ render_author_list_item(author.name, author.id, model) }}
+    {% endfor %}
+  </ul>
+  {{ render_pagination(pagination, '/authors/list') }}
+{{ draw_actions_panel(model) }}
+{% endblock %}

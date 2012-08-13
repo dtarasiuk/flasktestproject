@@ -1,4 +1,4 @@
-{% macro render_list_item(title, id, model) -%}
+{% macro render_author_list_item(title, id, model) -%}
   <li class="span3">
     <div class="thumbnail">
       <img src="http://lorempixel.com/260/180/?{{ id }}" alt="">
@@ -33,21 +33,19 @@
   </li>
 {%- endmacro %}
 
-{% macro draw_actions_panel(model) -%}
+{% macro draw_actions_panel(model) %}
   <div class="form-actions">
     <a class="btn btn-large" href="/{{ model }}/create"><i class="icon-plus"></i> Add new</a>
   </div>
 {%- endmacro %}
 
-{% macro render_author_in_select(id, name, selected) -%}
-  <option value="{{ id }}"{% if id in selected %} selected="1"{% endif %}>{{ name }}</option>
-{%- endmacro %}
-
-{% macro render_pagination(pagination, model) -%}
+{% macro render_pagination(pagination, url) %}
   <div class="pagination pagination-centered">
     <ul>
       {% for page in pagination.iter_pages() %}
-        <li{% if page == pagination.page %} class="active" {% endif %}><a href="/{{ model }}/list/page/{{ page }}">{{ page }}</a></li>
+        <li{% if page == pagination.page %} class="active" {% endif %}>
+          <a href="{{ url }}/page/{{ page }}{% if pagination.search_query %}?q={{ pagination.search_query }}{% endif %}">{{ page }}</a>
+        </li>
       {% endfor %} 
     </ul>
   </div>

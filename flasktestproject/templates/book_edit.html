@@ -15,7 +15,7 @@
         <div class="controls">
           <select data-placeholder="Choose Authors..." class="chzn-select" multiple style="width:350px;" tabindex="4" name="book-authors" id="book-authors" >
             {% for author in authors %}
-              {{ render_author_in_select(author.id, author.name, selected_authors) }}
+              <option value="{{ author.id }}"{% if author.id in selected_authors_ids %} selected="1"{% endif %}>{{ author.name }}</option>
             {% endfor %}  
           </select>
           <p class="help-block">Select authors here</p>
